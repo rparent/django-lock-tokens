@@ -27,7 +27,9 @@ Install
 
 1. Clone this repository and from the root, type ``python setup.py install``
 
-2. Add ``lock_tokens`` to your ``INSTALLED_APPS`` setting. As django-lock-tokens uses the ``contenttypes`` framework, make sure it is also available in your ``INSTALLED_APPS`` setting::
+2. Add ``lock_tokens`` to your ``INSTALLED_APPS`` setting. As django-lock-tokens uses the ``contenttypes`` framework, make sure it is also available in your ``INSTALLED_APPS`` setting:
+
+.. code:: python
 
     INSTALLED_APPS = [
         ...
@@ -38,7 +40,9 @@ Install
 
 3. Run ``python manage.py migrate`` from the root of your django project to install the lock tokens model.
 
-4. If you want to use the ``LockableAdmin`` and all the session-based functionalities, make sure you have enabled a session middleware in your settings, for example::
+4. If you want to use the ``LockableAdmin`` and all the session-based functionalities, make sure you have enabled a session middleware in your settings, for example:
+
+.. code:: python
 
     MIDDLEWARE_CLASSES = (
         ...
@@ -46,7 +50,9 @@ Install
         ...
     )
 
-5. If you want to use the REST API, include ``lock_tokens.urls`` in your ``urls.py`` like this::
+5. If you want to use the REST API, include ``lock_tokens.urls`` in your ``urls.py`` like this:
+
+.. code:: python
 
     urlpatterns = [
       ...
@@ -57,7 +63,9 @@ Install
 TL;DR
 -----
 
-After having completed previous steps, using the locking mechanism in your views is as simple as this::
+After having completed previous steps, using the locking mechanism in your views is as simple as this:
+
+.. code:: python
 
   from django.http import HttpResponseForbidden
   from lock_tokens.exceptions import AlreadyLockedError, UnlockForbiddenError
@@ -92,7 +100,9 @@ After having completed previous steps, using the locking mechanism in your views
 
 To make one of your models lockable, use the ``LockableModel`` class. ``LockableModel`` is just a Django proxy model, which simply provides additional locking methods to your models.
 
-So you can either make your models inherit from ``LockableModel``::
+So you can either make your models inherit from ``LockableModel``:
+
+.. code:: python
 
   from lock_tokens.models import LockableModel
 
@@ -103,7 +113,9 @@ So you can either make your models inherit from ``LockableModel``::
   obj = MyModel.get(...)
   token = obj.lock()
 
-or you can simply use it as a proxy on a given model instance::
+or you can simply use it as a proxy on a given model instance:
+
+.. code:: python
 
   from lock_tokens.models import LockableModel
 
@@ -116,7 +128,9 @@ This can be useful if you don't want to expose the locking methods for your mode
 
 Note that as ``LockableModel`` is just a proxy model, make your models inherit from it won't change their fields so there will be no additional migrations required.
 
-Additionally, if your model inherits from ``LockableModel``, the ``objects`` Manager has a specific method that allows you to get and lock a model like so::
+Additionally, if your model inherits from ``LockableModel``, the ``objects`` Manager has a specific method that allows you to get and lock a model like so:
+
+.. code:: python
 
   >>>obj, token = MyModel.get_and_lock(...<usual get arguments>)
 
@@ -132,7 +146,9 @@ Returns a ``dict`` containing a token a its expiration date.
 
 Raises a ``lock_tokens.exceptions.AlreadyLockedError`` if the resource is already locked, or if the token is wrong.
 
-Example::
+Example:
+
+.. code:: python
 
   def test(myObject):
       try:
@@ -171,7 +187,9 @@ Returns a boolean that indicates if the given token is valid for this object. Wi
 -------------------------------------
 
 If you want to make the admin interface lock-aware, and lock objects that are edited,
-simply make your ``ModelAdmin`` class inherit from ``LockableAdmin``::
+simply make your ``ModelAdmin`` class inherit from ``LockableAdmin``:
+
+.. code:: python
 
   from lock_tokens.admin import LockableAdmin
   from django.contrib import admin
@@ -224,7 +242,9 @@ Arguments:
 - ``model``: the concerned django Model
 - ``get_object_id_callable``: a callable that will return the concerned object id based on the view arguments
 
-Example::
+Example:
+
+.. code:: python
 
   from lock_tokens.decorators import locks_object
 
@@ -301,7 +321,9 @@ TODO
 Settings
 --------
 
-You can override ``lock_token`` default settings by adding a ``dict`` named ``LOCK_TOKENS`` to your ``settings.py`` like so::
+You can override ``lock_token`` default settings by adding a ``dict`` named ``LOCK_TOKENS`` to your ``settings.py`` like so:
+
+.. code:: python
 
   LOCK_TOKENS = {
     'TIMEOUT': 60,
