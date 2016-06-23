@@ -120,7 +120,7 @@ Additionally, if your model inherits from ``LockableModel``, the ``objects`` Man
 
   >>>obj, token = MyModel.get_and_lock(...<usual get arguments>)
 
-If you already overrided the default ``objects`` manager with a custom one and that you want to get this method available, make your custom model inherit from ``lock_tokens.managers.LockableModelManager``.
+If you already overrided the default ``objects`` manager with a custom one and that you want to get this method available, make your custom manager inherit from ``lock_tokens.managers.LockableModelManager``.
 
 
 ``LockableModel.lock(self, token=None)``
