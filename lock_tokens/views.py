@@ -44,7 +44,7 @@ class LockTokenBaseView(View):
     return lock_token
 
 
-class LockTokenCreateView(LockTokenBaseView):
+class LockTokenListView(LockTokenBaseView):
 
   def post(self, request, app_label, model, object_id):
     obj = self.get_object_or_404(app_label, model, object_id)
@@ -56,7 +56,7 @@ class LockTokenCreateView(LockTokenBaseView):
     return JsonResponse(lock_token.serialize(), status=201)
 
 
-class LockTokenAccessView(LockTokenBaseView):
+class LockTokenDetailView(LockTokenBaseView):
 
   def get(self, request, app_label, model, object_id, token):
     lock_token = self.get_valid_lock_token_or_error(app_label, model, object_id,

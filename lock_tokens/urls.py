@@ -1,11 +1,11 @@
 from django.conf.urls import url
 
-from lock_tokens.views import LockTokenAccessView, LockTokenCreateView
+from lock_tokens.views import LockTokenListView, LockTokenDetailView
 
 
 urlpatterns = [
     url(r'^(?P<app_label>\w+)/(?P<model>\w+)/(?P<object_id>\d+)/$',
-      LockTokenCreateView.as_view(), name='create-token'),
+      LockTokenListView.as_view(), name='list-view'),
     url(r'^(?P<app_label>\w+)/(?P<model>\w+)/(?P<object_id>\d+)/(?P<token>\w+)/$',
-      LockTokenAccessView.as_view(), name='access-token'),
+      LockTokenDetailView.as_view(), name='detail-view'),
 ]
