@@ -208,7 +208,7 @@ and the saving buttons will not appear. And if despite this, the change form is 
 
 
 Session-based usage: ``lock_tokens.sessions`` module
------------------------------------------------------
+----------------------------------------------------
 
 In most cases, it will be the easiest way to deal with lock tokens, as you won't need to handle them at all.
 
@@ -228,7 +228,7 @@ Unlocks an object in the given session.
 Raises a ``lock_tokens.exceptions.UnlockForbiddenError`` if the session does not hold the lock on the object.
 
 Session-based usage: ``lock_tokens.decorators`` module
--------------------------------------------------------
+------------------------------------------------------
 
 This module provides view decorators for common use cases.
 
