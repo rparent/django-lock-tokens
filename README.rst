@@ -326,8 +326,9 @@ You can override ``lock_token`` default settings by adding a ``dict`` named ``LO
 .. code:: python
 
   LOCK_TOKENS = {
+    'API_CSRF_EXEMPT': True,
+    'DATEFORMAT': "%Y%m%d%H%M%S",
     'TIMEOUT': 60,
-    'DATEFORMAT': "%Y%m%d%H%M%S"
   }
 
 TIMEOUT
@@ -338,4 +339,9 @@ The validity duration for a lock token in seconds. Defaults to ``3600`` (one hou
 DATEFORMAT
 ^^^^^^^^^^
 
-The format of the expiration date returned in the token ``dict``. Defaults to ``"%Y-%m-%d %H:%M:%S"``
+The format of the expiration date returned in the token ``dict``. Defaults to ``"%Y-%m-%d %H:%M:%S %Z"``
+
+API_CSRF_EXEMPT
+^^^^^^^^^^^^^^^
+
+A boolean that indicates whether to deactivate CSRF checks on the API views or not. Defaults to ``False``.

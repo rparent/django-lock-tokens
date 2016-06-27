@@ -8,12 +8,15 @@ from django.views.generic import View
 
 from lock_tokens.exceptions import AlreadyLockedError
 from lock_tokens.models import LockableModel, LockToken
+from lock_tokens.settings import API_CSRF_EXEMPT
 from lock_tokens.utils import get_oldest_valid_tokens_datetime
 
+def lock_tokens_csrf_exempt(view):
+  return csrf_exempt(view) if API_CSRF_EXEMPT else view
 
 class LockTokenBaseView(View):
 
-  @method_decorator(csrf_exempt)
+  @method_decorator(lock_tokens_csrf_exempt)
   def dispatch(self, *args, **kwargs):
     return super(LockTokenBaseView, self).dispatch(*args, **kwargs)
 
@@ -51,7 +54,7 @@ class LockTokenListView(LockTokenBaseView):
     try:
       lock_token = LockToken.objects.create(locked_object=obj)
     except AlreadyLockedError:
-      return JsonResponse(status=409, reason="This resource is "
+      return JsonResponse({}, status=409, reason="This resource is "
           "already locked")
     return JsonResponse(lock_token.serialize(), status=201)
 
