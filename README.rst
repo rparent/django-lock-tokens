@@ -95,6 +95,16 @@ After having completed previous steps, using the locking mechanism in your views
     return render(...)
 
 
+Or use it directly in your Django templates to handle locking on the client side::
+
+  {% load lock_tokens_tags %}
+  {% lock_tokens_api_client %}
+  ...
+  {% for obj in my_objects %}
+  <button onClick="LockTokens.lock('my_app', 'mymodel', obj.id);">Lock {{obj.name}}</button>
+  {% endfor%}
+
+
 ``LockableModel`` proxy
 -----------------------
 
@@ -316,7 +326,43 @@ Returns a 403 HTTP error if the token is incorrect.
 REST API Javascript client
 --------------------------
 
-TODO
+The application includes a javascript client to interact with the API. To enable it, simply add the following lines to your template, somewhere in the ``<body>`` section ::
+
+  {% load lock_tokens_tags %}
+  {% lock_tokens_api_client "<rest_api_base_url>" %}
+
+where ``rest_api_base_url`` is an optional parameter to specify the base path of the REST API as you defined it in your ``urls.py``. If you included the REST API urls as described in section 1, then you do not need to specify that parameter.
+
+Adding those lines in your template will make a variable named ``LockTokens`` available in the javascript scope. This object has the following methods (parameters are self-describing):
+
+``LockTokens.lock(app_label, model, object_id, callback)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Locks the corresponding object. When the call to the API is completed, calls the ``callback`` method with a ``lock_tokens.Token`` instance as an argument, or ``null`` if the API request failed.
+
+NB: The ``LockTokens`` handles the tokens for you, so you don't need to read API responses and/or store tokens yourself.
+
+``LockTokens.register_existing_lock_token(app_label, model, object_id, token_string, callback)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Add an existing token to the ``LockTokens`` registry. This method is useful for example when you want to handle on client side a lock that has been set on the server side. You must provide the token string in addition to other parameters, the client will make a call to the API to ensure the token is valid and get its expiration date. Calls the ``callback`` method with a ``lock_tokens.Token`` instance as an argument, or ``null`` if the registration failed.
+
+``LockTokens.unlock(app_label, model, object_id, callback)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Locks the corresponding object. When the call to the API is completed, calls the ``callback`` method with a boolean that indicates whether the API request has succeeded. Note that this method can be called only on an object that has been locked or registered as locked by the ``LockTokens`` object.
+
+``LockTokens.hold_lock(app_label, model, object_id)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Holds a lock on the corresponding object. It is like the ``lock`` method, except it renews the token each time it is about to expire. A call to ``unlock`` will stop the lock holding.
+
+
+``LockTokens.clear_all_locks(callback)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Unlocks all registered objects. Calls ``callback`` with no arguments when unlocking of every objects is done.
+
 
 Settings
 --------
