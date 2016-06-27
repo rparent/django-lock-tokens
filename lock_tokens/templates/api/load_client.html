@@ -1,0 +1,19 @@
+{% load staticfiles %}
+{% if csrf %}{% csrf_token %}{% endif %}
+<script src="{% static "lock_tokens/js/lock_tokens.js" %}" type="text/javascript"></script>
+<script type="text/javascript">
+var LockTokens;
+var csrf = {% if csrf %}true{% else %}false{% endif %};
+window.onload = function () {
+  var opts = {};
+  opts.base_api_url = "{{base_api_url}}";
+  if (csrf) {
+    opts.csrf_header_name = "{{csrf_header_name}}";
+    var csrf_tokens = document.getElementsByName('csrfmiddlewaretoken');
+    if (csrf_tokens.length > 0) {
+      opts.csrf_token = csrf_tokens[0].value;
+    }
+  }
+  LockTokens = new lock_tokens.LockTokens(opts);
+};
+</script>
