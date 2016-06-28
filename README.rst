@@ -21,6 +21,7 @@ Table of Contents
 6. `REST API`_
 7. `REST API Javascript client`_
 8. `Settings`_
+9. `Tests`_
 
 Install
 -------
@@ -391,3 +392,8 @@ API_CSRF_EXEMPT
 ^^^^^^^^^^^^^^^
 
 A boolean that indicates whether to deactivate CSRF checks on the API views or not. Defaults to ``False``.
+
+Tests
+-----
+
+To run tests, make sure Django >= 1.7 is installed in your virtualenv, then simply run ``python ./runtests.py`` from the root of the repository.

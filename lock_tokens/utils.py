@@ -21,9 +21,14 @@ class _LoopThread(threading.Thread):
     super(_LoopThread, self).__init__(target=self.loop)
 
   def loop(self):
-    self.lock_token.renew()
+    def renew(myself):
+      try:
+        myself.lock_token.renew()
+      except:
+        myself.stop.set()
+    renew(self)
     while not self.stop.wait(self.LOOP_TIME):
-      self.lock_token.renew()
+      renew(self)
 
   def terminate(self):
     self.stop.set()
