@@ -16,12 +16,13 @@ Table of Contents
 1. `Install`_
 2. `TL;DR`_
 3. `LockableModel proxy`_
-4. `Session-based usage: lock_tokens.sessions module`_
-5. `Session-based usage: lock_tokens.decorators module`_
-6. `REST API`_
-7. `REST API Javascript client`_
-8. `Settings`_
-9. `Tests`_
+4. `LockableModelAdmin for admin interface`_
+5. `Session-based usage: lock_tokens.sessions module`_
+6. `Session-based usage: lock_tokens.decorators module`_
+7. `REST API`_
+8. `REST API Javascript client`_
+9. `Settings`_
+10. `Tests`_
 
 Install
 -------
@@ -194,15 +195,15 @@ Returns a boolean that indicates whether the given object is currently locked or
 Returns a boolean that indicates if the given token is valid for this object. Will also return ``True`` with a warning if the object is not locked (lock expired or no lock).
 
 
-``LockableAdmin`` for admin interface
--------------------------------------
+``LockableModelAdmin`` for admin interface
+------------------------------------------
 
 If you want to make the admin interface lock-aware, and lock objects that are edited,
-simply make your ``ModelAdmin`` class inherit from ``LockableAdmin``:
+simply make your ``ModelAdmin`` class inherit from ``LockableModelAdmin``:
 
 .. code:: python
 
-  from lock_tokens.admin import LockableAdmin
+  from lock_tokens.admin import LockableModelAdmin
   from django.contrib import admin
 
   from my_app.models import MyModel
