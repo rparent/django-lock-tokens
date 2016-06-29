@@ -1,4 +1,4 @@
-/*global window, XMLHttpRequest */
+/*global document, window, XMLHttpRequest */
 var lock_tokens = {};
 
 
@@ -26,10 +26,11 @@ lock_tokens.APIClient = function (base_api_url, csrf_token, csrf_header_name) {
   this.base_api_url = base_api_url;
   this.csrf_token = csrf_token;
   this.csrf_header_name = csrf_header_name;
+  this.async_call_ = true;
 };
 lock_tokens.APIClient.prototype.api_call_ = function (uri, http_method, callback) {
   var r = new XMLHttpRequest();
-  r.open(http_method, this.base_api_url + uri, true);
+  r.open(http_method, this.base_api_url + uri, this.async_call_);
   r.onreadystatechange = function () {
     if (r.readyState !== 4) { return; }
     callback(r.status, r.responseText);
@@ -230,3 +231,22 @@ lock_tokens.LockTokens.prototype.clear_all_locks = function (callback) {
     }
   }
 };
+
+lock_tokens.emit_event = function (event_name) {
+  var e;
+  var full_event_name = "lock_tokens." + event_name;
+  if (document.createEvent) {
+    e = document.createEvent("HTMLEvents");
+    e.initEvent(full_event_name, true, true);
+  } else {
+    e = document.createEventObject();
+    e.eventType = full_event_name;
+  }
+  e.eventName = full_event_name;
+  if (document.createEvent) {
+    document.dispatchEvent(e);
+  } else {
+    document.fireEvent("on" + e.eventType, e);
+  }
+};
+

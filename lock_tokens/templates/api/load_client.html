@@ -15,5 +15,7 @@ window.onload = function () {
     }
   }
   LockTokens = new lock_tokens.LockTokens(opts);
+  // Emit event indicating that the client is ready
+  lock_tokens.emit_event("clientready");
 };
 </script>

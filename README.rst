@@ -102,9 +102,13 @@ Or use it directly in your Django templates to handle locking on the client side
   {% load lock_tokens_tags %}
   {% lock_tokens_api_client %}
   ...
-  {% for obj in my_objects %}
-  <button onClick="LockTokens.lock('my_app', 'mymodel', obj.id);">Lock {{obj.name}}</button>
-  {% endfor%}
+  <script type="text/javascript">
+    window.addEventListener('lock_tokens.clientready', function () {
+      LockTokens.lock(...);
+      ...
+      LockTokens.unlock(...);
+    });
+  </script>
 
 
 ``LockableModel`` proxy
@@ -335,7 +339,7 @@ The application includes a javascript client to interact with the API. To enable
 
 where ``rest_api_base_url`` is an optional parameter to specify the base path of the REST API as you defined it in your ``urls.py``. If you included the REST API urls as described in section 1, then you do not need to specify that parameter.
 
-Adding those lines in your template will make a variable named ``LockTokens`` available in the javascript scope. This object has the following methods (parameters are self-describing):
+Adding those lines in your template will make a variable named ``LockTokens`` available in the javascript scope, and emit a ``lock_tokens.clientready`` event when it is available. This object has the following methods (parameters are self-describing):
 
 ``LockTokens.lock(app_label, model, object_id, callback)``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

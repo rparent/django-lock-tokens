@@ -3,8 +3,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 
 from lock_tokens.exceptions import AlreadyLockedError
-from lock_tokens.sessions import (check_for_session, lock_for_session,
-    unlock_for_session)
+from lock_tokens.sessions import (check_for_session, get_session_key,
+    lock_for_session, unlock_for_session)
 
 
 class LockableModelAdmin(admin.ModelAdmin):
@@ -17,6 +17,7 @@ class LockableModelAdmin(admin.ModelAdmin):
     obj = self.model.objects.get(id=object_id)
     try:
       lock_for_session(obj, request.session)
+      extra_context["lock_token"] = request.session[get_session_key(obj)]
     except AlreadyLockedError:
       extra_context["already_locked"] = True
       messages.add_message(request, messages.ERROR, "You cannot edit this "
