@@ -19,7 +19,6 @@ class LockableModelAdmin(admin.ModelAdmin):
       lock_for_session(obj, request.session)
       extra_context["lock_token"] = request.session[get_session_key(obj)]
     except AlreadyLockedError:
-      extra_context["already_locked"] = True
       messages.add_message(request, messages.ERROR, "You cannot edit this "
           "object, it has been locked. Come back later.")
     return super(LockableModelAdmin, self).change_view(request, object_id,

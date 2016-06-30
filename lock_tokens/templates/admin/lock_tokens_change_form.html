@@ -50,5 +50,5 @@
     </script>
   {% endif %}
 {% endblock %}
-{% block submit_buttons_top %}{% if not already_locked %}{% submit_row %}{% endif %}{% endblock %}
-{% block submit_buttons_bottom %}{% if not already_locked %}{% submit_row %}{% endif %}{% endblock %}
+{% block submit_buttons_top %}{% if lock_token %}{% submit_row %}{% endif %}{% endblock %}
+{% block submit_buttons_bottom %}{% if lock_token %}{% submit_row %}{% endif %}{% endblock %}
