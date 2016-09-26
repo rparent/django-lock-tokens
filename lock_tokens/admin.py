@@ -54,7 +54,10 @@ class LockedContentTypesFilter(admin.SimpleListFilter):
 class LockTokenAdmin(admin.ModelAdmin):
 
   list_display = ('token_str', 'locked_object_content_type', 'locked_object_id',
-      'locked_at',)
+      'locked_at', 'expired', )
   list_filter = (LockedContentTypesFilter,)
   readonly_fields = ('locked_object_content_type', 'locked_object_id',
       'token_str', 'locked_at',)
+
+  def expired(self, obj):
+    return obj.has_expired()
