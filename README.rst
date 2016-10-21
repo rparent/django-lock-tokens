@@ -27,7 +27,7 @@ Table of Contents
 Install
 -------
 
-1. Clone this repository and from the root, type ``python setup.py install``
+1. Run ``pip install django-lock-tokens``
 
 2. Add ``lock_tokens`` to your ``INSTALLED_APPS`` setting. As django-lock-tokens uses the ``contenttypes`` framework, make sure it is also available in your ``INSTALLED_APPS`` setting:
 
