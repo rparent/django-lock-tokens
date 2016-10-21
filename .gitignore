@@ -2,3 +2,5 @@
 *.pyo
 *.egg-info
 venv/*
+dist/*
+build/*
