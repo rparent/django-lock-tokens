@@ -57,7 +57,7 @@ class LockToken(models.Model):
           locked_object_content_type=self.locked_object_content_type)
       if token.has_expired():
         token.delete()
-        return super(LockToken, self).save(*args, **opts)
+        return self.save(*args, **opts)
       raise AlreadyLockedError
 
   class Meta:
