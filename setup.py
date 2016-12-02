@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-lock-tokens',
-    version='0.1.1',
+    version='0.1.2',
     packages=['lock_tokens'],
     include_package_data=True,
     description='A Django application that provides a locking mechanism to prevent concurrency editing.',
