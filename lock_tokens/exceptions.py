@@ -1,11 +1,14 @@
 class AlreadyLockedError(IOError):
-  pass
+    pass
+
 
 class UnlockForbiddenError(IOError):
-  pass
+    pass
+
 
 class NoLockWarning(Warning):
-  pass
+    pass
+
 
 class LockExpiredWarning(Warning):
-  pass
+    pass
