@@ -3,9 +3,8 @@ from __future__ import absolute_import, unicode_literals
 
 from django.conf.urls import include, url
 
-from tests import views
-
 import lock_tokens.urls
+from tests import views
 
 urlpatterns = [
     url(r'^lock-tokens/', include(lock_tokens.urls, namespace='lock-tokens')),

@@ -6,14 +6,13 @@ from django.core.urlresolvers import reverse
 from django.test import TransactionTestCase
 from django.test.client import Client
 
-from tests.models import TestModel
-
 from lock_tokens.exceptions import AlreadyLockedError, UnlockForbiddenError
 from lock_tokens.sessions import (
     check_for_session,
     lock_for_session,
     unlock_for_session
 )
+from tests.models import TestModel
 
 
 class SessionLockingTestCase(TransactionTestCase):

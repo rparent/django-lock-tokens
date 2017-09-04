@@ -6,11 +6,10 @@ import time
 
 from django.test import TransactionTestCase
 
-from tests.models import TestModel
-
 from lock_tokens.exceptions import AlreadyLockedError, UnlockForbiddenError
 from lock_tokens.models import LockToken
 from lock_tokens.settings import TIMEOUT
+from tests.models import TestModel
 
 
 class LockableModelTestCase(TransactionTestCase):

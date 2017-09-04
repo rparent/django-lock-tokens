@@ -3,9 +3,8 @@ from __future__ import absolute_import
 
 from django.http import HttpResponse
 
-from tests.models import TestModel
-
 from lock_tokens.decorators import holds_lock_on_object, locks_object
+from tests.models import TestModel
 
 
 @locks_object(TestModel, lambda request: request.GET.get('object_id'))
