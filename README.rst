@@ -1,6 +1,15 @@
-==================
+=============================
 django-lock-tokens
-==================
+=============================
+
+.. image:: https://badge.fury.io/py/django-lock-tokens.svg
+    :target: https://badge.fury.io/py/django-lock-tokens
+
+.. image:: https://travis-ci.org/rparent/django-lock-tokens.svg?branch=master
+    :target: https://travis-ci.org/rparent/django-lock-tokens
+
+.. image:: https://codecov.io/gh/rparent/django-lock-tokens/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/rparent/django-lock-tokens
 
 django-lock-tokens is a Django application that provides a locking mechanism to prevent concurrency editing.
 
@@ -37,7 +46,7 @@ Install
         ...
         'django.contrib.contenttypes',
         ...
-        'lock_tokens',
+        'lock_tokens.apps.LockTokensConfig',
     ]
 
 3. Run ``python manage.py migrate`` from the root of your django project to install the lock tokens model.
@@ -401,4 +410,22 @@ A boolean that indicates whether to deactivate CSRF checks on the API views or n
 Tests
 -----
 
-To run tests, make sure Django >= 1.7 is installed in your virtualenv, then simply run ``python ./runtests.py`` from the root of the repository.
+To run tests, make sure Django >= 1.8 is installed in your virtualenv, then simply run from the root of the repository:
+
+::
+
+    source <YOURVIRTUALENV>/bin/activate
+    (myenv) $ pip install tox
+    (myenv) $ tox
+
+
+Credits
+-------
+
+Tools used in rendering this package:
+
+*  Cookiecutter_
+*  `cookiecutter-djangopackage`_
+
+.. _Cookiecutter: https://github.com/audreyr/cookiecutter
+.. _`cookiecutter-djangopackage`: https://github.com/pydanny/cookiecutter-djangopackage
