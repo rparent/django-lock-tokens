@@ -1,2 +1,2 @@
 django-model-utils>=2.0
-# Additional requirements go here
+django-braces>=1.11.0

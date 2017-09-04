@@ -5,6 +5,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
+from braces.views import JSONResponseMixin
+
 from lock_tokens.exceptions import AlreadyLockedError
 from lock_tokens.models import LockToken
 from lock_tokens.settings import API_CSRF_EXEMPT
@@ -15,7 +17,7 @@ def lock_tokens_csrf_exempt(view):
     return csrf_exempt(view) if API_CSRF_EXEMPT else view
 
 
-class LockTokenBaseView(View):
+class LockTokenBaseView(JSONResponseMixin, View):
 
     @method_decorator(lock_tokens_csrf_exempt)
     def dispatch(self, *args, **kwargs):
@@ -55,9 +57,10 @@ class LockTokenListView(LockTokenBaseView):
         try:
             lock_token = LockToken.objects.create(locked_object=obj)
         except AlreadyLockedError:
-            return JsonResponse({}, status=409, reason="This resource is "
-                                "already locked")
-        return JsonResponse(lock_token.serialize(), status=201)
+            # This resource is already locked
+            return self.render_json_response({}, status=409)
+
+        return self.render_json_response(lock_token.serialize(), status=201)
 
 
 class LockTokenDetailView(LockTokenBaseView):
@@ -65,16 +68,17 @@ class LockTokenDetailView(LockTokenBaseView):
     def get(self, request, app_label, model, object_id, token):
         lock_token = self.get_valid_lock_token_or_error(app_label, model, object_id,
                                                         token)
-        return JsonResponse(lock_token.serialize())
+        return self.render_json_response(lock_token.serialize())
 
     def patch(self, request, app_label, model, object_id, token):
         lock_token = self.get_valid_lock_token_or_error(app_label, model, object_id,
                                                         token)
         lock_token.renew()
-        return JsonResponse(lock_token.serialize())
+
+        return self.render_json_response(lock_token.serialize())
 
     def delete(self, request, app_label, model, object_id, token):
         lock_token = self.get_valid_lock_token_or_error(app_label, model, object_id,
                                                         token)
         lock_token.delete()
-        return JsonResponse({}, status=204)
+        return self.render_json_response({}, status=204)

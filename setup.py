@@ -59,6 +59,7 @@ setup(
     license="MIT",
     zip_safe=False,
     keywords='django-lock-tokens',
+    install_requires=['django-braces>=1.11.0'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Framework :: Django',
