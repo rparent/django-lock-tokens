@@ -7,6 +7,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import IntegrityError, models
 from django.utils import timezone
 
+from model_utils.models import TimeStampedModel
+
 from lock_tokens.exceptions import (
     AlreadyLockedError,
     LockExpiredWarning,
@@ -22,7 +24,7 @@ def get_random_token():
     return uuid4().hex
 
 
-class LockToken(models.Model):
+class LockToken(TimeStampedModel):
     token_str = models.CharField(max_length=32, unique=True, editable=False,
                                  default=get_random_token)
     locked_object_content_type = models.ForeignKey(ContentType)
