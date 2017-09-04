@@ -1,5 +1,5 @@
 # -*- coding: utf-8
-from __future__ import unicode_literals, absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import json
 import time
@@ -7,8 +7,8 @@ import time
 from django.core.urlresolvers import reverse
 from django.test import TransactionTestCase
 from django.test.client import Client
-import six
 
+import six
 from tests.models import TestModel
 
 

@@ -1,17 +1,18 @@
 import datetime
-from uuid import uuid4
 import warnings
+from uuid import uuid4
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.db import models, IntegrityError
+from django.db import IntegrityError, models
 from django.utils import timezone
 
 from lock_tokens.exceptions import (
     AlreadyLockedError,
     LockExpiredWarning,
     NoLockWarning,
-    UnlockForbiddenError)
+    UnlockForbiddenError
+)
 from lock_tokens.managers import LockableModelManager, LockTokenManager
 from lock_tokens.settings import DATEFORMAT, TIMEOUT
 from lock_tokens.utils import get_oldest_valid_tokens_datetime

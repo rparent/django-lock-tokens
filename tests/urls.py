@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, absolute_import
+from __future__ import absolute_import, unicode_literals
 
 from django.conf.urls import include, url
 
-import lock_tokens.urls
 from tests import views
+
+import lock_tokens.urls
 
 urlpatterns = [
     url(r'^lock-tokens/', include(lock_tokens.urls, namespace='lock-tokens')),

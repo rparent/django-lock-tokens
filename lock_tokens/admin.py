@@ -8,7 +8,8 @@ from lock_tokens.sessions import (
     check_for_session,
     get_session_key,
     lock_for_session,
-    unlock_for_session)
+    unlock_for_session
+)
 
 
 class LockableModelAdmin(admin.ModelAdmin):

@@ -1,7 +1,6 @@
 from django.conf.urls import url
 
-from lock_tokens.views import LockTokenListView, LockTokenDetailView
-
+from lock_tokens.views import LockTokenDetailView, LockTokenListView
 
 urlpatterns = [
     url(r'^(?P<app_label>\w+)/(?P<model>\w+)/(?P<object_id>\d+)/$',
