@@ -1,4 +1,5 @@
-from __future__ import absolute_import
+# -*- coding: utf-8
+from __future__ import unicode_literals, absolute_import
 
 import json
 import time
@@ -6,6 +7,7 @@ import time
 from django.core.urlresolvers import reverse
 from django.test import TransactionTestCase
 from django.test.client import Client
+import six
 
 from tests.models import TestModel
 
@@ -25,11 +27,11 @@ class APITestCase(TransactionTestCase):
     token_dict = json.loads(r.content)
     self.assertIn('token', token_dict.keys(), "The token dictionary should "
         "contain a 'token' key")
-    self.assertIsInstance(token_dict['token'], unicode, "Wrong format for "
+    self.assertIsInstance(token_dict['token'], six.text_type, "Wrong format for "
         "'token' key")
     self.assertIn('expires', token_dict.keys(), "The token dictionary should "
         "contain a 'expires' key")
-    self.assertIsInstance(token_dict['expires'], unicode, "Wrong format for "
+    self.assertIsInstance(token_dict['expires'], six.text_type, "Wrong format for "
         "'expires' key")
 
     # Retrieve token
