@@ -23,6 +23,7 @@ def get_random_token():
 
 
 class LockToken(models.Model):
+    created = models.DateTimeField(auto_now_add=True, editable=False)
     token_str = models.CharField(max_length=32, unique=True, editable=False,
                                  default=get_random_token)
     locked_object_content_type = models.ForeignKey(ContentType)
