@@ -22,16 +22,25 @@ Requires Django >= 1.7.
 Table of Contents
 -----------------
 
-1. `Install`_
-2. `TL;DR`_
-3. `LockableModel proxy`_
-4. `LockableModelAdmin for admin interface`_
-5. `Session-based usage: lock_tokens.sessions module`_
-6. `Session-based usage: lock_tokens.decorators module`_
-7. `REST API`_
-8. `REST API Javascript client`_
-9. `Settings`_
-10. `Tests`_
+1. `Requirements`_
+2. `Install`_
+3. `TL;DR`_
+4. `LockableModel proxy`_
+5. `LockableModelAdmin for admin interface`_
+6. `Session-based usage: lock_tokens.sessions module`_
+7. `Session-based usage: lock_tokens.decorators module`_
+8. `REST API`_
+9. `REST API Javascript client`_
+10. `Settings`_
+11. `Tests`_
+
+
+Requirements
+-------
+
+* Python (2.7, 3.2, 3.3, 3.4, 3.5)
+* Django (1.7, 1.8, 1.9, 1.10)
+
 
 Install
 -------
@@ -418,7 +427,7 @@ A boolean that indicates whether to deactivate CSRF checks on the API views or n
 Tests
 -----
 
-To run tests, make sure Django >= 1.8 is installed in your virtualenv, then simply run from the root of the repository:
+To run tests simply run from the root of the repository:
 
 ::
 
