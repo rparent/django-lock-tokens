@@ -78,46 +78,48 @@ After having completed previous steps, using the locking mechanism in your views
 
 .. code:: python
 
-  from django.http import HttpResponseForbidden
-  from lock_tokens.exceptions import AlreadyLockedError, UnlockForbiddenError
-  from lock_tokens.sessions import check_for_session, lock_for_session, unlock_for_session
+    from django.http import HttpResponseForbidden
+    from lock_tokens.exceptions import AlreadyLockedError, UnlockForbiddenError
+    from lock_tokens.sessions import check_for_session, lock_for_session, unlock_for_session
 
-  from my_app.models import MyModel
+    from my_app.models import MyModel
 
-  def view_with_object_edition(request):
-    """This view locks the instance of MyModel that is to be edited."""
-    # Get MyModel instance:
-    obj = MyModel.objects.get(...)
-    try:
-        lock_for_session(obj, request.session)
-    except AlreadyLockedError:
-        return HttpResponseForbidden("This resource is locked, sorry !")
-    # ... Do stuff
-    return render(...)
 
-  def view_that_saves_object(request):
-    """This view locks the instance of MyModel that is to be edited."""
-    # Get MyModel instance:
-    obj = MyModel.objects.get(...)
-    if not check_for_session(obj, request.session):
-        return HttpResponseForbidden("Cannot modify the object, you don't have the lock.")
-    # ... Do stuff
-    unlock_for_session(obj, request.session)
-    return render(...)
+    def view_with_object_edition(request):
+        """This view locks the instance of MyModel that is to be edited."""
+        # Get MyModel instance:
+        obj = MyModel.objects.get(...)
+        try:
+            lock_for_session(obj, request.session)
+        except AlreadyLockedError:
+            return HttpResponseForbidden("This resource is locked, sorry !")
+        # ... Do stuff
+        return render(...)
+
+
+    def view_that_saves_object(request):
+        """This view locks the instance of MyModel that is to be edited."""
+        # Get MyModel instance:
+        obj = MyModel.objects.get(...)
+        if not check_for_session(obj, request.session):
+            return HttpResponseForbidden("Cannot modify the object, you don't have the lock.")
+        # ... Do stuff
+        unlock_for_session(obj, request.session)
+        return render(...)
 
 
 Or use it directly in your Django templates to handle locking on the client side::
 
-  {% load lock_tokens_tags %}
-  {% lock_tokens_api_client %}
-  ...
-  <script type="text/javascript">
-    window.addEventListener('lock_tokens.clientready', function () {
-      LockTokens.lock(...);
-      ...
-      LockTokens.unlock(...);
-    });
-  </script>
+    {% load lock_tokens_tags %}
+    {% lock_tokens_api_client %}
+    ...
+    <script type="text/javascript">
+        window.addEventListener('lock_tokens.clientready', function () {
+            LockTokens.lock(...);
+            ...
+            LockTokens.unlock(...);
+        });
+    </script>
 
 
 ``LockableModel`` proxy
@@ -129,25 +131,26 @@ So you can either make your models inherit from ``LockableModel``:
 
 .. code:: python
 
-  from lock_tokens.models import LockableModel
+    from lock_tokens.models import LockableModel
 
-  class MyModel(LockableModel):
-      ...
+    class MyModel(LockableModel):
+        ...
 
+    obj = MyModel.get(...)
+    token = obj.lock()
 
-  obj = MyModel.get(...)
-  token = obj.lock()
 
 or you can simply use it as a proxy on a given model instance:
 
 .. code:: python
 
-  from lock_tokens.models import LockableModel
+    from lock_tokens.models import LockableModel
 
-  from my_app.models import MyModel
+    from my_app.models import MyModel
 
-  obj = MyModel.get(...)
-  token = LockableModel.lock(obj)
+    obj = MyModel.get(...)
+    token = LockableModel.lock(obj)
+
 
 This can be useful if you don't want to expose the locking methods for your models everywhere, or if you want to lock resources that come from a third party application.
 
@@ -157,7 +160,7 @@ Additionally, if your model inherits from ``LockableModel``, the ``objects`` Man
 
 .. code:: python
 
-  >>>obj, token = MyModel.get_and_lock(...<usual get arguments>)
+    >>>obj, token = MyModel.get_and_lock(...<usual get arguments>)
 
 If you already overrided the default ``objects`` manager with a custom one and that you want to get this method available, make your custom manager inherit from ``lock_tokens.managers.LockableModelManager``.
 
@@ -175,19 +178,20 @@ Example:
 
 .. code:: python
 
-  def test(myObject):
-      try:
-          token = myObject.lock()
-      except AlreadyLockedError:
-          print "This object is already locked"
-      return token
+    def test(myObject):
+        try:
+            token = myObject.lock()
+        except AlreadyLockedError:
+            print "This object is already locked"
+        return token
 
-  >>>token = test(obj)
-  {"token": "9692ac52a27a40308b82b49b77357c97", "expires": "2016-06-23 09:48:06"}
-  >>>test(obj)
-  "This object is already locked"
-  >>>test(obj, token['token'])
-  {"token": "9692ac52a27a40308b82b49b77357c97", "expires": "2016-06-23 09:48:26"}
+
+    >>>token = test(obj)
+    {"token": "9692ac52a27a40308b82b49b77357c97", "expires": "2016-06-23 09:48:06"}
+    >>>test(obj)
+    "This object is already locked"
+    >>>test(obj, token['token'])
+    {"token": "9692ac52a27a40308b82b49b77357c97", "expires": "2016-06-23 09:48:26"}
 
 
 ``LockableModel.unlock(self, token)``
@@ -216,15 +220,16 @@ simply make your ``ModelAdmin`` class inherit from ``LockableModelAdmin``:
 
 .. code:: python
 
-  from lock_tokens.admin import LockableModelAdmin
-  from django.contrib import admin
+    from lock_tokens.admin import LockableModelAdmin
+    from django.contrib import admin
 
-  from my_app.models import MyModel
+    from my_app.models import MyModel
 
-  class MyModelAdmin(LockableModelAdmin):
-    ...
+    class MyModelAdmin(LockableModelAdmin):
+        ...
 
-  admin.site.register(MyModel, MyModelAdmin)
+    admin.site.register(MyModel, MyModelAdmin)
+
 
 With this, when accessing a given instance of ``MyModel`` from the admin interface,
 it will check that the instance is not locked. If it is not, it will lock it. If it is,
@@ -271,19 +276,20 @@ Example:
 
 .. code:: python
 
-  from lock_tokens.decorators import locks_object
+    from lock_tokens.decorators import locks_object
 
-  @locks_object(MyModel, lambda request: request.GET.get('my_model_id'))
-  def myview(request):
-    # In this example the view will lock the MyModel instance with the id
-    # provided in the request GET parameter my_model_id
-    ...
+    @locks_object(MyModel, lambda request: request.GET.get('my_model_id'))
+    def myview(request):
+        # In this example the view will lock the MyModel instance with the id
+        # provided in the request GET parameter my_model_id
+        ...
 
-  @locks_object(MyModel, lambda request, object_id: object_id)
-  def anotherview(request, object_id):
-    # In this example the view will lock the MyModel instance with the id
-    # provided as the second view argument
-    ...
+    @locks_object(MyModel, lambda request, object_id: object_id)
+    def anotherview(request, object_id):
+        # In this example the view will lock the MyModel instance with the id
+        # provided as the second view argument
+        ...
+
 
 ``holds_lock_on_object(model, get_object_id_callable)``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -343,8 +349,9 @@ REST API Javascript client
 
 The application includes a javascript client to interact with the API. To enable it, simply add the following lines to your template, somewhere in the ``<body>`` section ::
 
-  {% load lock_tokens_tags %}
-  {% lock_tokens_api_client %}
+
+    {% load lock_tokens_tags %}
+    {% lock_tokens_api_client %}
 
 Don't forget to include the REST API urls with the correct namespace as described in section 1, otherwise it won't work.
 
@@ -386,11 +393,12 @@ You can override ``lock_token`` default settings by adding a ``dict`` named ``LO
 
 .. code:: python
 
-  LOCK_TOKENS = {
-    'API_CSRF_EXEMPT': True,
-    'DATEFORMAT': "%Y%m%d%H%M%S",
-    'TIMEOUT': 60,
-  }
+    LOCK_TOKENS = {
+        'API_CSRF_EXEMPT': True,
+        'DATEFORMAT': "%Y%m%d%H%M%S",
+        'TIMEOUT': 60,
+    }
+
 
 TIMEOUT
 ^^^^^^^
