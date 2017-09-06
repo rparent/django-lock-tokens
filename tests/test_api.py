@@ -7,6 +7,7 @@ import time
 from django.core.urlresolvers import reverse
 from django.test import TransactionTestCase
 from django.test.client import Client
+from django.utils.encoding import force_text
 
 import six
 from tests.models import TestModel
@@ -24,7 +25,7 @@ class APITestCase(TransactionTestCase):
         r = self.client.post(base_url)
         self.assertEquals(r.status_code, 201, "The API should return HTTP 201 when "
                           "lock is created")
-        token_dict = json.loads(r.content)
+        token_dict = json.loads(force_text(r.content))
         self.assertIn('token', token_dict.keys(), "The token dictionary should "
                       "contain a 'token' key")
         self.assertIsInstance(token_dict['token'], six.text_type, "Wrong format for "
@@ -38,7 +39,7 @@ class APITestCase(TransactionTestCase):
         r = self.client.get(base_url + token_dict['token'] + '/')
         self.assertEqual(r.status_code, 200, "API should return HTTP 200 when "
                          "retrieving lock")
-        self.assertJSONEqual(r.content, token_dict,
+        self.assertJSONEqual(force_text(r.content), token_dict,
                              "Retrieved dictionary is wrong")
 
         # Renew token
@@ -46,7 +47,7 @@ class APITestCase(TransactionTestCase):
         r = self.client.patch(base_url + token_dict['token'] + '/')
         self.assertEqual(r.status_code, 200, "API should return 200 when renewing "
                          "token")
-        new_token_dict = json.loads(r.content)
+        new_token_dict = json.loads(force_text(r.content))
         self.assertEqual(new_token_dict['token'], token_dict['token'], "API "
                          "returned wrong token string when renewing lock")
         self.assertNotEqual(new_token_dict['expires'], token_dict['expires'], "The "
