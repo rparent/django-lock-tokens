@@ -1,6 +1,7 @@
+include AUTHORS.rst
+include CONTRIBUTING.rst
+include HISTORY.rst
+include LICENSE
 include README.rst
-recursive-include lock_tokens/templates *.html
-recursive-include lock_tokens/templatetags *.py
-recursive-include lock_tokens/static *.js
-recursive-include lock_tokens/management *.py
+recursive-include lock_tokens *.html *.png *.gif *js *.css *jpg *jpeg *svg *py
 recursive-exclude * *.py[co]
