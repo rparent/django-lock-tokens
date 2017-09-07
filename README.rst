@@ -17,7 +17,7 @@ It is not user-based nor session-based, it is just token based. When you lock a 
 
 The application provides some useful functions to handle this token mechanism with sessions if you want to, and a REST API (with a javascript client for it) to deal with lock tokens without sessions.
 
-Requires Django >= 1.7.
+Requires Django >= 1.8.
 
 Table of Contents
 -----------------
@@ -39,7 +39,7 @@ Requirements
 -------
 
 * Python (2.7, 3.3, 3.4, 3.5)
-* Django (1.7, 1.8, 1.9, 1.10)
+* Django (1.8, 1.9, 1.10)
 
 
 Install
