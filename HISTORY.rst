@@ -3,7 +3,8 @@
 History
 -------
 
-0.1.3 (2017-09-04)
+0.1.4 (2017-09-07)
 ++++++++++++++++++
 
-* First release on PyPI.
+* Adds a `created` field to the `LockToken` model
+
