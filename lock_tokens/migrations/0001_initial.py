@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('token_str', models.CharField(default=lock_tokens.models.get_random_token, unique=True, max_length=32, editable=False)),
                 ('locked_object_id', models.PositiveIntegerField()),
                 ('locked_at', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
-                ('locked_object_content_type', models.ForeignKey(to='contenttypes.ContentType')),
+                ('locked_object_content_type', models.ForeignKey(to='contenttypes.ContentType', on_delete=models.CASCADE)),
             ],
             options={
             },
