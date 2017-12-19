@@ -4,7 +4,7 @@ from __future__ import absolute_import, unicode_literals
 import json
 import time
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TransactionTestCase
 from django.test.client import Client
 from django.utils.encoding import force_text
