@@ -1,7 +1,10 @@
 import uuid
 
 from django.conf import settings
-from django.urls import reverse
+try:
+    from django.urls import reverse
+except ImportError:
+    from django.core.urlresolvers import reverse
 from django.template import Library
 
 from lock_tokens.settings import API_CSRF_EXEMPT
