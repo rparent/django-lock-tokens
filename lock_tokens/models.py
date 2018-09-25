@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.db import IntegrityError, models
+from django.db import IntegrityError, models, transaction
 from django.utils import timezone
 
 from lock_tokens.exceptions import (
@@ -56,13 +56,16 @@ class LockToken(models.Model):
 
     def save(self, *args, **opts):
         try:
-            return super(LockToken, self).save(*args, **opts)
+            with transaction.atomic():
+                if not self.pk:
+                    # When creating a new token, remove existing expired tokens for the object
+                    # to be locked
+                    c = LockToken.objects.filter(locked_object_id=self.locked_object_id,
+                        locked_object_content_type=self.locked_object_content_type,
+                        locked_at__lte=self.locked_at-datetime.timedelta(seconds=TIMEOUT)
+                    ).delete()
+                return super(LockToken, self).save(*args, **opts)
         except IntegrityError as e:
-            token = LockToken.objects.get(locked_object_id=self.locked_object_id,
-                                          locked_object_content_type=self.locked_object_content_type)
-            if token.has_expired():
-                token.delete()
-                return self.save(*args, **opts)
             raise AlreadyLockedError
 
     class Meta:
