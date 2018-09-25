@@ -52,7 +52,6 @@ class LockableModelTestCase(TransactionTestCase):
                          "string should not have changed when renewing token")
         self.assertNotEqual(token_dict['expires'], new_token_dict['expires'], "The "
                             "token expiration date string should have changed when renewing token")
-        self.test_model_instance.unlock(token=token_dict['token'])
 
         # Unlock object
         self.test_model_instance.unlock(token=token_dict['token'])

@@ -181,7 +181,7 @@ Locks the given object, or renew existing lock if the token parameter is provide
 
 Returns a ``dict`` containing a token a its expiration date.
 
-Raises a ``lock_tokens.exceptions.AlreadyLockedError`` if the resource is already locked, or if the token is wrong.
+Raises a ``lock_tokens.exceptions.AlreadyLockedError`` if the resource is already locked, and a ``lock_tokens.exceptions.InvalidToken`` if the specified token is invalid.
 
 Example:
 
@@ -257,7 +257,7 @@ In most cases, it will be the easiest way to deal with lock tokens, as you won't
 Lock an object in the given session. This function will try to lock the object,
 and if it succeeds, it will hold the token value in a session variable.
 
-Raises a ``lock_tokens.exceptions.AlreadyLockedError`` if the resource is already locked.
+Raises a ``lock_tokens.exceptions.AlreadyLockedError`` if the resource is already locked, and a ``lock_tokens.exceptions.InvalidToken`` error if the session holds an invalid token.
 
 ``unlock_for_session(obj, session)``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -265,6 +265,13 @@ Raises a ``lock_tokens.exceptions.AlreadyLockedError`` if the resource is alread
 Unlocks an object in the given session.
 
 Raises a ``lock_tokens.exceptions.UnlockForbiddenError`` if the session does not hold the lock on the object.
+
+``check_for_session(obj, session)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Check if an object has a valid lock in the given session.
+
+Returns `True` if the session holds a valid lock (even if it has expired), and `False` if the session holds an invalid lock or no lock.
 
 Session-based usage: ``lock_tokens.decorators`` module
 ------------------------------------------------------

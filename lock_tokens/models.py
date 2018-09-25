@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from lock_tokens.exceptions import (
     AlreadyLockedError,
+    InvalidToken,
     LockExpiredWarning,
     NoLockWarning,
     UnlockForbiddenError
@@ -77,12 +78,22 @@ class LockableModel(models.Model):
     objects = LockableModelManager()
 
     def _lock(self, token=None):
+        # Token renewing attempt
+        if token is not None:
+            try:
+                lock_token = LockToken.objects.get_for_object(self)
+            except LockToken.DoesNotExist:
+                raise InvalidToken
+            else:
+                if not lock_token.token_str == token:
+                    raise InvalidToken
+                lock_token.renew()
+                return lock_token
+
+        # Token creation attempt
         lock_token, created = LockToken.objects.get_or_create_for_object(self)
         if not created:
-            if lock_token.token_str == token:
-                lock_token.renew()
-            else:
-                raise AlreadyLockedError
+            raise AlreadyLockedError
         return lock_token
 
     def _check_and_get_lock_token(self, token):
@@ -90,7 +101,7 @@ class LockableModel(models.Model):
             lock_token = LockToken.objects.get_for_object(self)
         except LockToken.DoesNotExist:
             warnings.warn('This object is not locked.', NoLockWarning)
-            return True, None
+            return False, None
         if token == lock_token.token_str:
             if lock_token.has_expired():
                 warnings.warn('Lock has expired', LockExpiredWarning)

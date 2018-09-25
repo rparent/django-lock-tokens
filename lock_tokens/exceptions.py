@@ -2,6 +2,10 @@ class AlreadyLockedError(IOError):
     pass
 
 
+class InvalidToken(IOError):
+    pass
+
+
 class UnlockForbiddenError(IOError):
     pass
 

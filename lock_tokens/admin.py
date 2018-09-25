@@ -32,7 +32,14 @@ class LockableModelAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if change:
             if not check_for_session(obj, request.session):
-                raise PermissionDenied("Resource already locked, cannot save.")
+                raise PermissionDenied("Invalid lock, cannot save.")
+            try:
+              # Renew lock to make sure it is still valid when saving
+              lock_for_session(obj, request.session)
+            except AlreadyLockedError:
+              # Race condition: lock expired just after the check_for_session call and
+              # someone else locked the object before the lock_for_session call
+              raise PermissionDenied("Lock has expired, cannot save.")
         super(LockableModelAdmin, self).save_model(request, obj, form, change)
         if change:
             unlock_for_session(obj, request.session)

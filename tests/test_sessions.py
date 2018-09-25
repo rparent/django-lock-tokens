@@ -51,8 +51,8 @@ class SessionLockingTestCase(TransactionTestCase):
 
         # Ensure object is unlocked
         self.assertFalse(self.test_model_instance.is_locked())
-        self.assertTrue(check_for_session(self.test_model_instance, session))
-        self.assertTrue(check_for_session(
+        self.assertFalse(check_for_session(self.test_model_instance, session))
+        self.assertFalse(check_for_session(
             self.test_model_instance, other_session))
 
     def test_view_decorators(self):
