@@ -21,7 +21,15 @@ class LockableModelAdmin(admin.ModelAdmin):
         extra_context["already_locked"] = False
         obj = self.model.objects.get(id=object_id)
         try:
-            lock_for_session(obj, request.session)
+            # When the request has the "GET" method, it means that the view will simply
+            # retrieve the object and display the form. So in this case it is ok to force
+            # the generation of a new lock token, without trying to use a potential existing
+            # token key in the session.
+            # When the request has the "POST" method, the user is trying to modify the object.
+            # So in this case, to avoid overwriting with an ivalid token, it is mandatory to
+            # have a valid token in session.
+            force_new_session_lock = (request.method == 'GET')
+            lock_for_session(obj, request.session, force_new=force_new_session_lock)
             extra_context["lock_token"] = request.session[get_session_key(obj)]
         except AlreadyLockedError:
             messages.add_message(request, messages.ERROR, "You cannot edit this "
