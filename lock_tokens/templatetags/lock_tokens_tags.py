@@ -32,3 +32,14 @@ def lock_tokens_api_client():
                 'HTTP_', '').replace('_', '-')
         context['csrf_header_name'] = csrf_header_name
     return context
+
+
+@register.inclusion_tag('admin/handle_lock.html')
+def admin_lock_handler(app_label, model_name, object_id, token):
+    return {
+        'app_label': app_label,
+        'model_name': model_name,
+        'object_id': object_id,
+        'token': token
+    }
+

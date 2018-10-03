@@ -245,6 +245,24 @@ it will check that the instance is not locked. If it is not, it will lock it. If
 then there will be a warning message displayed to inform that the object cannot be edited,
 and the saving buttons will not appear. And if despite this, the change form is sent, it will raise a ``PermissionDenied`` exception so you will get a HTTP 403 error.
 
+Overrinding `change_form_template` in `LockableModelAdmin`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you want to override the `change_form_template`, but still make sure the lock will be released when leaving the page without saving, don't forget to add the `admin_lock_handler` template tag. This template tag needs 4 arguments: the application name of the object, the model name of the object, the object id and the lock token key. So don't forget to add those (especially the lock token) into your template context if you also override the `change_view` method.
+
+Example to add the template tag to your custom template if you don't override `change_view`:
+
+.. code:: html
+
+    ...
+    {% load lock_tokens_tags %}
+    ...
+    {% if lock_token %}
+      {% admin_lock_handler opts.app_label opts.model_name original.id lock_token %}
+    {% endif %}
+
+
+
 
 Session-based usage: ``lock_tokens.sessions`` module
 ----------------------------------------------------

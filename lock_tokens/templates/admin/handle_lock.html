@@ -1,0 +1,46 @@
+{% load lock_tokens_tags %}
+{% lock_tokens_api_client %}
+<script type="text/javascript">
+    var keep_lock_on_unload = false;
+    var valid_token = false;
+    document.addEventListener("lock_tokens.clientready", function () {
+        LockTokens.register_existing_lock_token("{{ app_label }}", "{{ model_name }}", "{{ object_id }}", "{{ token }}",
+            function (token) {
+                if (token) {
+                    valid_token = true;
+                } else {
+                    // This situation should only happen when the user refreshed the page
+                    // or got to previous page then came back
+                    confirmed = window.confirm("There was a problem during object locking. You should refresh the page to lock the object properly.\nDo you want to refresh ?")
+                    if (confirmed) {
+                        location.reload();
+                    }
+                }
+            });
+
+        function set_keep_lock_on_unload(e) {
+            e = e || window.event;
+            keep_lock_on_unload = true;
+        }
+
+        var submit_buttons = document.querySelectorAll("input[type=submit]");
+        for (var i=0; i<submit_buttons.length; ++i) {
+            var button = submit_buttons[i];
+            button.onclick = set_keep_lock_on_unload;
+        }
+
+        var delete_links = document.getElementsByClassName('deletelink');
+        for (var i=0; i<delete_links.length; ++i) {
+            var link = delete_links[i];
+            link.onclick = set_keep_lock_on_unload;
+        }
+    });
+
+    window.onunload = function () {
+      /* Unlock model before leaving page without saving */
+        if (!keep_lock_on_unload && valid_token) {
+            LockTokens.api_client_.async_call_ = false;
+            LockTokens.unlock("{{ app_label }}", "{{ model_name }}", "{{ object_id }}");
+          }
+    };
+</script>
