@@ -251,11 +251,14 @@ Session-based usage: ``lock_tokens.sessions`` module
 
 In most cases, it will be the easiest way to deal with lock tokens, as you won't need to handle them at all.
 
-``lock_for_session(obj, session)``
+``lock_for_session(obj, session, force_new=False)``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Lock an object in the given session. This function will try to lock the object,
 and if it succeeds, it will hold the token value in a session variable.
+
+There is a `force_new` optional parameter that you can set to `True` if you want to force a new lock generation without using a potentially existing token key stored in session. This is to be used with caution (i.e. exclusively in methods that only read the object, not in methods that save it) as it could lead to a potential overwriting if the session holds an invalid token.
+To sum up: do not set this parameter to `True` unless you are sure of what you are doing!
 
 Raises a ``lock_tokens.exceptions.AlreadyLockedError`` if the resource is already locked, and a ``lock_tokens.exceptions.InvalidToken`` error if the session holds an invalid token.
 

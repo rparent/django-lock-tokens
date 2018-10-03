@@ -8,9 +8,12 @@ def get_session_key(obj):
     return "_".join([contenttype.app_label, contenttype.model, str(obj.id)])
 
 
-def lock_for_session(obj, session):
+def lock_for_session(obj, session, force_new=False):
     session_key = get_session_key(obj)
     token = session.get(session_key)
+    if token and force_new:
+      del session[session_key]
+      token = None
     lock_token = LockableModel.lock(obj, token)
     session[session_key] = lock_token['token']
 
