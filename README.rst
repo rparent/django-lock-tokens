@@ -45,7 +45,7 @@ Table of Contents
 
 
 Requirements
--------
+------------
 
 * Python (2.7, 3.3, 3.4, 3.5)
 * Django (1.8, 1.9, 1.10, 1.11, 2.0, 2.1)
@@ -313,7 +313,7 @@ Session-based usage: ``lock_tokens.sessions`` module
 In most cases, it will be the easiest way to deal with lock tokens, as you won't need to handle them at all.
 
 ``lock_for_session(obj, session, force_new=False)``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Lock an object in the given session. This function will try to lock the object,
 and if it succeeds, it will hold the token value in a session variable.
