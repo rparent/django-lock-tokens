@@ -25,7 +25,7 @@ Table of Contents
 1. `Requirements`_
 2. `Install`_
 3. `TL;DR`_
-4. `How it works`
+4. `How it works`_
 5. `LockableModel proxy`_
 6. `LockableModelAdmin for admin interface`_
 7. `Session-based usage: lock_tokens.sessions module`_
@@ -134,17 +134,17 @@ Or use it directly in your Django templates to handle locking on the client side
 How it works
 ------------
 
-To avoid concurrency editing, `django-lock-tokens` provides some interfaces to lock and check lock on any model instance before changing it (including third party model instances).
-This is handled via an internal model (`LockToken`). There can be only one `LockToken` instance per model instance.
+To avoid concurrency editing, ``django-lock-tokens`` provides some interfaces to lock and check lock on any model instance before changing it (including third party model instances).
+This is handled via an internal model (``LockToken``). There can be only one ``LockToken`` instance per model instance.
 
 The lock token lifecycle is the following:
 
-  1. When a lock is created for an object by an entity, it is valid for a certain amount of time. The entity is given a **lock token key** (a string) that it must hold to perform actions with valid lock required. A new `LockToken` instance is created in database, after having deleted a potential expired instance in database.
-  2. If the entity that holds the lock token key no longer needs the lock on the object, it can unlock this object by providing the lock token key. The `LockToken` instance is then removed from database.
+  1. When a lock is created for an object by an entity, it is valid for a certain amount of time. The entity is given a **lock token key** (a string) that it must hold to perform actions with valid lock required. A new ``LockToken`` instance is created in database, after having deleted a potential expired instance in database.
+  2. If the entity that holds the lock token key no longer needs the lock on the object, it can unlock this object by providing the lock token key. The ``LockToken`` instance is then removed from database.
   3. The entity that holds the lock token key can also renew the lock token by providing the lock token key.
   4. If the lock token is not renewed until the expiration time, it becomes expired, but stays in database until a new lock is created on this instance (or the entity that holds the lock token key deletes it).
 
-So to use this mechanism correctly, you should **require** a valid lock token key in any method where an object is saved and you want to prevent concurrency editing. Based on the 4 previous points, we can see that there can be 3 cases for a lock token key:
+So to use this mechanism correctly, you should **require** a valid lock token key and renew the lock in any method where an object is saved and you want to prevent concurrency editing. Based on the 4 previous points, we can see that there can be 3 cases for a lock token key:
 
   1. The lock token key has a corresponding lock token in database, and it has not expired.
   2. The lock token key has a corresponding lock token in database, but it has expired.
@@ -157,11 +157,12 @@ For case 2, the lock has expired but no other entity has created a lock on the o
 In case 3, it means that the lock token created by the entity has expired, and that another entity has taken a lock on the object in the meantime and could have done some changes on it. So it is not ok to save changes. The token key is **INVALID**.
 
 Here is an example to understand the case 3:
-  1. Alice takes a lock on an object and opens up its editing interface. *A `LockToken` instance `lt1` is created in database, and Alice is given a lock token key*
-  2. Alice walks away from her computer, the lock expires. *`lt1` is still in database*
-  3. Bob takes a lock on the same object. *`lt1` is deleted from database, and a new `LockToken` instance `lt2` is created*
-  4. Bob edits the object in the interface, clicks save. The object is modified and the lock is released. *`lt2` is deleted. The object has no longer any lock in database*
-  4. Alice returns, clicks save. The lock token key she holds has become invalid, so she gets an error.
+
+  1. Alice takes a lock on an object and opens up its editing interface. *A ``LockToken`` instance ``lt1`` is created in database, and Alice is given a lock token key*
+  2. Alice walks away from her computer, the lock expires. *``lt1`` is still in database*
+  3. Bob takes a lock on the same object. *``lt1`` is deleted from database, and a new ``LockToken`` instance ``lt2`` is created*
+  4. Bob edits the object in the interface, clicks save. The object is modified and the lock is released. *``lt2`` is deleted. The object has no longer any lock in database*
+  5. Alice returns, clicks save. The lock token key she holds has become invalid, so she gets an error.
 
 This example shows how it is important to require a **VALID** lock token key to prevent concurrency editing.
 
