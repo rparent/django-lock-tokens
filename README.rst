@@ -17,7 +17,15 @@ It is not user-based nor session-based, it is just token based. When you lock a 
 
 The application provides some useful functions to handle this token mechanism with sessions if you want to, and a REST API (with a javascript client for it) to deal with lock tokens without sessions.
 
-Requires Django >= 1.8.
+
+Here is a non exhaustive list of the features coming with this token-based approach, to help you choose ``django-lock-tokens`` (or not!) over other concurrent edition preventing solutions:
+
+- No need to modify your models to use the locking mechanism : you don't "pollute" your datamodel with "non-data" fields. This also means you can use the locking mechanism on third party models that cannot be modified
+- No need to use sessions (but you can still use it if you want to)
+- Ability to check if an object is locked BEFORE trying to modify it
+- Rest API (+ javascript client to use it) out-of-the-box
+- Admin interface integration
+
 
 Table of Contents
 -----------------
@@ -327,7 +335,7 @@ Raises a ``lock_tokens.exceptions.UnlockForbiddenError`` if the session does not
 
 Check if an object has a valid lock in the given session.
 
-Returns `True` if the session holds a valid lock (even if it has expired), and `False` if the session holds an invalid lock or no lock.
+Returns ``True`` if the session holds a valid lock (even if it has expired), and ``False`` if the session holds an invalid lock or no lock.
 
 Session-based usage: ``lock_tokens.decorators`` module
 ------------------------------------------------------
