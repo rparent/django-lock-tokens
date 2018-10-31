@@ -1,6 +1,8 @@
 import datetime
-import warnings
+import sys
+from types import MethodType
 from uuid import uuid4
+import warnings
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -73,9 +75,23 @@ class LockToken(models.Model):
         unique_together = (('locked_object_content_type', 'locked_object_id'),)
 
 
+def get_bound_method(method, instance):
+  if sys.version_info[0] < 3:
+    return MethodType(method, instance, instance.__class__)
+  return MethodType(method, instance)
+
 class LockableModel(models.Model):
 
     objects = LockableModelManager()
+
+    def __init__(self, *args, **kwargs):
+      super(LockableModel, self).__init__(*args, **kwargs)
+
+      # Bind methods to instance
+      self.lock = get_bound_method(self.lock, self)
+      self.unlock = get_bound_method(self.unlock, self)
+      self.check_lock_token = get_bound_method(self.check_lock_token, self)
+      self.is_locked = get_bound_method(self.is_locked, self)
 
     @staticmethod
     def _lock(obj, token=None):
@@ -110,23 +126,27 @@ class LockableModel(models.Model):
             return True, lock_token
         return False, None
 
-    def lock(self, token=None):
-        lock_token = LockableModel._lock(self, token)
+    @classmethod
+    def lock(cls, obj, token=None):
+        lock_token = cls._lock(obj, token)
         return lock_token.serialize()
 
-    def unlock(self, token):
-        allowed, lock_token = LockableModel._check_and_get_lock_token(self, token)
+    @classmethod
+    def unlock(cls, obj, token):
+        allowed, lock_token = cls._check_and_get_lock_token(obj, token)
         if not allowed:
             raise UnlockForbiddenError
         if lock_token:
             lock_token.delete()
 
-    def check_lock_token(self, token):
-        return LockableModel._check_and_get_lock_token(self, token)[0]
+    @classmethod
+    def check_lock_token(cls, obj, token):
+        return cls._check_and_get_lock_token(obj, token)[0]
 
-    def is_locked(self):
+    @classmethod
+    def is_locked(cls, obj):
         try:
-            lock_token = LockToken.objects.get_for_object(self)
+            lock_token = LockToken.objects.get_for_object(obj)
         except LockToken.DoesNotExist:
             return False
         return not lock_token.has_expired()
