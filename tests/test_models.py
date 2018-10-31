@@ -6,10 +6,10 @@ import time
 
 from django.test import TransactionTestCase
 
-from tests.models import TestModel
+from tests.models import RegularModel, TestModel
 
 from lock_tokens.exceptions import AlreadyLockedError, UnlockForbiddenError
-from lock_tokens.models import LockToken
+from lock_tokens.models import LockableModel, LockToken
 from lock_tokens.settings import TIMEOUT
 
 
@@ -18,6 +18,8 @@ class LockableModelTestCase(TransactionTestCase):
     def setUp(self):
         self.test_model_instance = TestModel.objects.create(
             name='test LockableModel')
+        self.regular_model_instance = RegularModel.objects.create(
+            name='test regular model')
 
     def test_locking_scenario(self):
         # Lock object
@@ -60,8 +62,39 @@ class LockableModelTestCase(TransactionTestCase):
         self.assertFalse(self.test_model_instance.is_locked(), "The is_locked "
                          "method should return False since the object is unlocked")
 
+    def test_locking_scenario_using_proxy(self):
+        token_dict = LockableModel.lock(self.regular_model_instance)
+
+        # Check that object is locked
+        self.assertTrue(LockableModel.is_locked(self.regular_model_instance), "The is_locked method"
+                        " should return True since the object is locked")
+
+        # Try to access it without providing token
+        with self.assertRaises(AlreadyLockedError, msg="Trying to lock already "
+                               "locked object without valid token should raise an AlreadyLockedError"):
+            LockableModel.lock(self.regular_model_instance)
+        with self.assertRaises(UnlockForbiddenError, msg="Trying to unlock already "
+                               "locked object without valid token should raise an "
+                               "UnlockForbiddenError"):
+            LockableModel.unlock(self.regular_model_instance, 'wrong_token')
+
+        # Renew lock token for object
+        time.sleep(1)
+        new_token_dict = LockableModel.lock(self.regular_model_instance, token=token_dict['token'])
+        self.assertEqual(token_dict['token'], new_token_dict['token'], "The token "
+                         "string should not have changed when renewing token")
+        self.assertNotEqual(token_dict['expires'], new_token_dict['expires'], "The "
+                            "token expiration date string should have changed when renewing token")
+
+        # Unlock object
+        LockableModel.unlock(self.regular_model_instance, token=token_dict['token'])
+
+        # Check that the object is unlocked
+        self.assertFalse(LockableModel.is_locked(self.regular_model_instance), "The is_locked "
+                         "method should return False since the object is unlocked")
+
     def test_expired_lock(self):
-        lock_token = self.test_model_instance._lock()
+        lock_token = LockableModel._lock(self.test_model_instance)
         lock_token.locked_at = lock_token.locked_at - \
             datetime.timedelta(seconds=TIMEOUT + 1)
         lock_token.save()
@@ -72,7 +105,7 @@ class LockableModelTestCase(TransactionTestCase):
                          "method should return False since the lock on the object has expired.")
 
         # Lock the object
-        new_lock_token = self.test_model_instance._lock()
+        new_lock_token = LockableModel._lock(self.test_model_instance)
         self.assertNotEqual(lock_token.token_str, new_lock_token.token_str, "The "
                             "new token string should not be equal to the expired token one")
         # We check that the expired lock token has been correctly removed in db

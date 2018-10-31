@@ -77,11 +77,12 @@ class LockableModel(models.Model):
 
     objects = LockableModelManager()
 
-    def _lock(self, token=None):
+    @staticmethod
+    def _lock(obj, token=None):
         # Token renewing attempt
         if token is not None:
             try:
-                lock_token = LockToken.objects.get_for_object(self)
+                lock_token = LockToken.objects.get_for_object(obj)
             except LockToken.DoesNotExist:
                 raise InvalidToken
             else:
@@ -91,14 +92,15 @@ class LockableModel(models.Model):
                 return lock_token
 
         # Token creation attempt
-        lock_token, created = LockToken.objects.get_or_create_for_object(self)
+        lock_token, created = LockToken.objects.get_or_create_for_object(obj)
         if not created:
             raise AlreadyLockedError
         return lock_token
 
-    def _check_and_get_lock_token(self, token):
+    @staticmethod
+    def _check_and_get_lock_token(obj, token):
         try:
-            lock_token = LockToken.objects.get_for_object(self)
+            lock_token = LockToken.objects.get_for_object(obj)
         except LockToken.DoesNotExist:
             warnings.warn('This object is not locked.', NoLockWarning)
             return False, None
@@ -109,18 +111,18 @@ class LockableModel(models.Model):
         return False, None
 
     def lock(self, token=None):
-        lock_token = self._lock(token)
+        lock_token = LockableModel._lock(self, token)
         return lock_token.serialize()
 
     def unlock(self, token):
-        allowed, lock_token = self._check_and_get_lock_token(token)
+        allowed, lock_token = LockableModel._check_and_get_lock_token(self, token)
         if not allowed:
             raise UnlockForbiddenError
         if lock_token:
             lock_token.delete()
 
     def check_lock_token(self, token):
-        return self._check_and_get_lock_token(token)[0]
+        return LockableModel._check_and_get_lock_token(self, token)[0]
 
     def is_locked(self):
         try:

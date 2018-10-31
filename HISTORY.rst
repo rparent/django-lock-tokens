@@ -3,6 +3,10 @@
 History
 -------
 
+0.2.2 (2018-10-31)
+^^^^^^^^^^^^^^^^^^
+- Fixes ``LockableModel`` to allow to use it as a proxy
+
 0.2.1 (2018-10-04)
 ^^^^^^^^^^^^^^^^^^
 - Fixes ``LockToken.save`` method to prevent potential transaction errors

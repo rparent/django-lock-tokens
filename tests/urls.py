@@ -2,6 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.conf.urls import include, url
+from django.contrib import admin
 
 from tests import views
 
@@ -14,4 +15,5 @@ urlpatterns = [
         name='view-that-locks-object-2'),
     url(r'^test3/(?P<object_id>\d+)/$', views.test_view_3,
         name='view-that-unlocks-object'),
+    url(r'^admin/', admin.site.urls),
 ]
