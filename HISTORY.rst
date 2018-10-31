@@ -3,6 +3,10 @@
 History
 -------
 
+0.2.3 (2018-10-31)
+^^^^^^^^^^^^^^^^^^
+- Fixes ``LockableModel`` for Python 2.7
+
 0.2.2 (2018-10-31)
 ^^^^^^^^^^^^^^^^^^
 - Fixes ``LockableModel`` to allow to use it as a proxy
