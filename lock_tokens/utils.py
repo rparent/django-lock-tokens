@@ -1,10 +1,15 @@
 import datetime
+import sys
 import threading
+from types import MethodType
 
+from django.db import models
 from django.utils import timezone
 
 from lock_tokens.settings import TIMEOUT
 
+
+LESS_THAN_PYTHON3 = sys.version_info[0] < 3
 
 def get_oldest_valid_tokens_datetime():
     return timezone.now() - datetime.timedelta(seconds=TIMEOUT)
@@ -56,3 +61,29 @@ class LockHolder(object):
 
     def __del__(self):
         self.stop()
+
+
+def class_or_bound_method(function):
+    function._bind_at_instanciation = True
+    return classmethod(function)
+
+
+class DLTModelProxyBase(models.base.ModelBase):
+
+    def __call__(cls, *args, **kwargs):
+        instance = super(DLTModelProxyBase, cls).__call__(*args, **kwargs)
+        for key in dir(cls):
+            try:
+              obj = getattr(instance, key)
+            except AttributeError:
+              # Happens for attributes like 'objects' which are not defined for an instance
+              continue
+            if callable(obj) and getattr(obj, '_bind_at_instanciation', False):
+                setattr(instance, key, cls._get_bound_method(obj, instance))
+        return instance
+
+    @staticmethod
+    def _get_bound_method(method, instance):
+        if LESS_THAN_PYTHON3:
+          return MethodType(method, instance, instance.__class__)
+        return MethodType(method, instance)

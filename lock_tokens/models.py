@@ -1,4 +1,5 @@
 import datetime
+import six
 import sys
 from types import MethodType
 from uuid import uuid4
@@ -18,7 +19,8 @@ from lock_tokens.exceptions import (
 )
 from lock_tokens.managers import LockableModelManager, LockTokenManager
 from lock_tokens.settings import DATEFORMAT, TIMEOUT
-from lock_tokens.utils import get_oldest_valid_tokens_datetime
+from lock_tokens.utils import (class_or_bound_method, DLTModelProxyBase,
+                               get_oldest_valid_tokens_datetime)
 
 
 def get_random_token():
@@ -75,23 +77,9 @@ class LockToken(models.Model):
         unique_together = (('locked_object_content_type', 'locked_object_id'),)
 
 
-def get_bound_method(method, instance):
-  if sys.version_info[0] < 3:
-    return MethodType(method, instance, instance.__class__)
-  return MethodType(method, instance)
-
-class LockableModel(models.Model):
+class LockableModel(six.with_metaclass(DLTModelProxyBase, models.Model)):
 
     objects = LockableModelManager()
-
-    def __init__(self, *args, **kwargs):
-      super(LockableModel, self).__init__(*args, **kwargs)
-
-      # Bind methods to instance
-      self.lock = get_bound_method(self.lock, self)
-      self.unlock = get_bound_method(self.unlock, self)
-      self.check_lock_token = get_bound_method(self.check_lock_token, self)
-      self.is_locked = get_bound_method(self.is_locked, self)
 
     @staticmethod
     def _lock(obj, token=None):
@@ -126,12 +114,12 @@ class LockableModel(models.Model):
             return True, lock_token
         return False, None
 
-    @classmethod
+    @class_or_bound_method
     def lock(cls, obj, token=None):
         lock_token = cls._lock(obj, token)
         return lock_token.serialize()
 
-    @classmethod
+    @class_or_bound_method
     def unlock(cls, obj, token):
         allowed, lock_token = cls._check_and_get_lock_token(obj, token)
         if not allowed:
@@ -139,11 +127,11 @@ class LockableModel(models.Model):
         if lock_token:
             lock_token.delete()
 
-    @classmethod
+    @class_or_bound_method
     def check_lock_token(cls, obj, token):
         return cls._check_and_get_lock_token(obj, token)[0]
 
-    @classmethod
+    @class_or_bound_method
     def is_locked(cls, obj):
         try:
             lock_token = LockToken.objects.get_for_object(obj)
