@@ -8,9 +8,12 @@ class LockTokenManager(Manager):
 
     def get_for_object(self, obj, allow_expired=True):
         contenttype = ContentType.objects.get_for_model(obj)
+        return self.get_for_contenttype_and_id(contenttype, obj.id, allow_expired)
+
+    def get_for_contenttype_and_id(self, contenttype, object_id, allow_expired=True):
         lookup_fields = {
             'locked_object_content_type': contenttype,
-            'locked_object_id': obj.id
+            'locked_object_id': object_id
         }
         if not allow_expired:
             lookup_fields['locked_at__gte'] = get_oldest_valid_tokens_datetime()

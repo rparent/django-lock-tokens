@@ -8,7 +8,6 @@ from django.views.generic import View
 from lock_tokens.exceptions import AlreadyLockedError
 from lock_tokens.models import LockToken
 from lock_tokens.settings import API_CSRF_EXEMPT
-from lock_tokens.utils import get_oldest_valid_tokens_datetime
 
 
 def lock_tokens_csrf_exempt(view):
@@ -35,12 +34,12 @@ class LockTokenBaseView(View):
         except contenttype.model_class().DoesNotExist:
             raise Http404("The object with id %s does not exist" % object_id)
 
-    def get_valid_lock_token_or_error(self, app_label, model, object_id, token):
+    def get_valid_lock_token_or_error(self, app_label, model, object_id, token, allow_expired=True):
         contenttype = self.get_contenttype_or_404(app_label, model)
         try:
-            lock_token = LockToken.objects.get(locked_object_content_type=contenttype,
-                                               locked_object_id=object_id,
-                                               locked_at__gte=get_oldest_valid_tokens_datetime())
+            lock_token = LockToken.objects.get_for_contenttype_and_id(contenttype,
+                                                                      object_id,
+                                                                      allow_expired)
         except LockToken.DoesNotExist:
             raise Http404("No valid token for this resource.")
         if not token == lock_token.token_str:
