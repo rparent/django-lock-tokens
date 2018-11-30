@@ -3,6 +3,12 @@
 History
 -------
 
+0.2.4 (2018-11_30)
+^^^^^^^^^^^^^^^^^^
+- The HTTP API endpoint to get token information now returns the token information even when it has expired, because it is still valid to use (see this_)
+
+.. _this: https://github.com/rparent/django-lock-tokens#how-it-works
+
 0.2.3 (2018-10-31)
 ^^^^^^^^^^^^^^^^^^
 - Fixes ``LockableModel`` for Python 2.7
