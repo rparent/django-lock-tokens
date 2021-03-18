@@ -14,8 +14,14 @@ from lock_tokens.sessions import (
 
 
 class LockableModelAdmin(admin.ModelAdmin):
+    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+        # use custom template in change view, but use default in add view, as lock is not used there
+        self.change_form_template = 'admin/lock_tokens_change_form.html'
+        if add:
+            self.change_form_template = None
 
-    change_form_template = 'admin/lock_tokens_change_form.html'
+        return super(LockableModelAdmin, self).render_change_form(request, context, add, change,
+                                                                  form_url, obj)
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}
@@ -34,8 +40,8 @@ class LockableModelAdmin(admin.ModelAdmin):
             extra_context["lock_token"] = request.session[get_session_key(obj)]
         except AlreadyLockedError:
             messages.add_message(
-                request, 
-                messages.ERROR, 
+                request,
+                messages.ERROR,
                 _("You cannot edit this object, it has been locked. Come back later.")
             )
         return super(LockableModelAdmin, self).change_view(request, object_id,
