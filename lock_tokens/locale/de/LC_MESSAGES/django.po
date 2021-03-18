@@ -1,0 +1,22 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: lock_tokens\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-08 08:38-0600\n"
+"PO-Revision-Date: 2021-03-08 09:06+0100\n"
+"Last-Translator: Liip\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.3\n"
+
+msgid "You cannot edit this object, it has been locked. Come back later."
+msgstr "Sie können dieses Objekt nicht bearbeiten, es wurde gesperrt. Versuchen Sie es später erneut."
+
+msgid "Invalid lock, cannot save."
+msgstr "Ungültige Sperre, kann nicht gespeichert werden."
+
+msgid "Lock has expired, cannot save."
+msgstr "Die Sperre ist abgelaufen, kann nicht gespeichert werden."
