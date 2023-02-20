@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.conf.urls import re_path
 
 from lock_tokens.views import LockTokenDetailView, LockTokenListView
 
@@ -6,8 +6,8 @@ from lock_tokens.views import LockTokenDetailView, LockTokenListView
 app_name = 'lock_tokens'
 
 urlpatterns = [
-    url(r'^(?P<app_label>\w+)/(?P<model>\w+)/(?P<object_id>\d+)/$',
+    re_path(r'^(?P<app_label>\w+)/(?P<model>\w+)/(?P<object_id>\d+)/$',
         LockTokenListView.as_view(), name='list-view'),
-    url(r'^(?P<app_label>\w+)/(?P<model>\w+)/(?P<object_id>\d+)/(?P<token>\w+)/$',
+    re_path(r'^(?P<app_label>\w+)/(?P<model>\w+)/(?P<object_id>\d+)/(?P<token>\w+)/$',
         LockTokenDetailView.as_view(), name='detail-view'),
 ]
