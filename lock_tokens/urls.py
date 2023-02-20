@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import re_path
 from lock_tokens.views import LockTokenDetailView, LockTokenListView
 
 
